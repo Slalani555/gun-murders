@@ -12,14 +12,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 This is a report on 2010 gun murder rates obtained from FBI reports.The original data was obtained from Wikipedia.
 
-We are going to use the following library:
+We are going to use the following libraries:
 ```{r loading-libs, message=FALSE}
 library(tidyverse)
+library(ggthemes)
+library(ggrepel)
 ```
 
-and load the data :
+and load the wrangled data :
 ```{r}
 load("rda/murders.rda")
+load("rda/avg_murders.rda")
 ```
 
 
@@ -35,4 +38,22 @@ murders%>% mutate(abb=reorder(abb,rate))%>%
   xlab("State")+
   ylab("Murder Rate")+
   coord_flip()
+```
+
+## Scatter Plot
+
+```{r , echo=FALSE}
+murders %>%
+  ggplot(aes(population/10^6, total, label = abb)) +
+  geom_abline(intercept = log10(us_murder_rate), lty = 2, color = "darkgrey") +
+  geom_point(aes(col = region), size = 3) +
+  geom_text_repel() +
+  scale_x_log10() +
+  scale_y_log10() +
+  xlab("Population in millions (log scale)") +
+  ylab("Total number of murders (log scale)") +
+  ggtitle("US Gun Murders in 2010") +
+  scale_color_discrete(name = "Region") +
+  theme_economist()
+
 ```
